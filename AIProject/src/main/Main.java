@@ -2,9 +2,7 @@ package main;
 
 import java.util.HashMap;
 
-import javax.swing.JFrame;
-
-import classifiers.simpleClassifier;
+import classifiers.correctClassifier;;
 
 public class Main {
 	
@@ -18,9 +16,10 @@ public class Main {
 //		gui.setSize(650, 300);
 //		gui.setVisible(true);
 		
- 		simpleClassifier simpleClassifier = new simpleClassifier();
-		simpleClassifier.trainClassifier(dataSet, 0.9);
-		System.out.println(simpleClassifier.testAccuracy("Ham"));
+ 		correctClassifier correctClassifier = new correctClassifier();
+ 		correctClassifier.addType("../AIProject/Ham", "Ham");
+ 		Document document = new Document("test", "../AIProject/Ham/3-375msg1.txt");
+ 		System.out.println(document.getFeatures().toString());
 	}
 
 	

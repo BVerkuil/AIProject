@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -17,18 +18,19 @@ import javax.swing.JFrame;
 
 import main.GUI;
 
-public class simpleClassifier {
+public class SimpleClassifier_old {
 
 	public HashMap<String, String> dataSet;
 	public HashMap<String, HashMap<String, Double>> featureCountPerType = new HashMap<String, HashMap<String, Double>>();
 	public double trainRatio;
 	public HashMap<String, Integer> totalFilesPerType = new HashMap<String, Integer>();
 	public HashMap<String, Integer> filesIndexedPerType = new HashMap<String, Integer>(); /*Used to keep track how many files are indexed already, use in combination with trainRation to decide whether to train or test a file*/
+	//List of words that do not need to go in the featureIndexes
+	public ArrayList<String> blackList = new ArrayList<String>(Arrays.asList("in", "a", "the"));
 
 	int totalFilesChecked;
 	int correctlyIdentified;
-	
-	
+
 	/**
 	 * @param dataSet
 	 * @param trainRatio
@@ -50,6 +52,7 @@ public class simpleClassifier {
 			buildIndexes(type, dataSet.get(type));
 		}
 		normalizeIndexes();
+		System.out.println(blackList);
 	}
 
 	/**
@@ -90,6 +93,7 @@ public class simpleClassifier {
 			scanner = new Scanner(new File(filePath.toString()));
 			while (scanner.hasNext()) {
 				String nextWord = scanner.next();
+				nextWord = normalizeWord(nextWord);
 				if (!nextWord.equals("")) {
 					if (!currentIndex.keySet().contains(nextWord)) {
 						currentIndex.put(nextWord, 1.0);
@@ -103,6 +107,15 @@ public class simpleClassifier {
 			e.printStackTrace();
 		}
 
+	}
+
+	public String normalizeWord(String word) {
+		word = word.replaceAll("[^a-zA-Z]", "").toLowerCase();
+		if (!blackList.contains(word)) {
+			return word;
+		} else {
+			return "";
+		}
 	}
 
 	public void normalizeIndexes() {
@@ -135,7 +148,7 @@ public class simpleClassifier {
 						//Code above is a for-each loop for all the files on the fileLocation of certain type
 						//Code only gets executed for files that the classifier uses to test.
 						if ((double) filesIndexedPerType.get(type) / totalFilesPerType.get(type) > trainRatio) {
-							if(identifyFileType(new File(filePath.toString())).equals(type) ){
+							if (identifyFileType(new File(filePath.toString())).equals(type)) {
 								correctlyIdentified++;
 							}
 							totalFilesChecked++;
@@ -150,7 +163,7 @@ public class simpleClassifier {
 				e.printStackTrace();
 			}
 		}
-		return (double)correctlyIdentified/totalFilesChecked;
+		return (double) correctlyIdentified / totalFilesChecked;
 	}
 
 	public String identifyFileType(File file) {
@@ -171,18 +184,18 @@ public class simpleClassifier {
 						}
 					}
 				}
-				if(typePreference.containsKey(currentTypeGuess)) {
+				if (typePreference.containsKey(currentTypeGuess)) {
 					typePreference.put(currentTypeGuess, typePreference.get(currentTypeGuess) + 1);
 				} else {
 					typePreference.put(currentTypeGuess, 0);
 				}
 			}
 			//Gone through all the words, check which type has the highest integer in typePreference
-			if(!typePreference.isEmpty()) {
+			if (!typePreference.isEmpty()) {
 				double currentMax = 0;
 				String currentTypeGuess = "";
-				for(String type: typePreference.keySet()) {
-					if(typePreference.get(type) > currentMax) {
+				for (String type : typePreference.keySet()) {
+					if (typePreference.get(type) > currentMax) {
 						currentMax = typePreference.get(type);
 						currentTypeGuess = type;
 					}
