@@ -13,6 +13,10 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
+import javax.swing.JFrame;
+
+import main.GUI;
+
 public class simpleClassifier {
 
 	public static simpleClassifier sC = new simpleClassifier();
@@ -22,6 +26,10 @@ public class simpleClassifier {
 	float correctlyClassifiedFiles = 0;
 
 	public static void main(String[] args) {
+		GUI gui = new GUI();
+		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		gui.setSize(650, 300);
+		gui.setVisible(true);
 		sC.readFiles("Ham");
 		sC.readFiles("Spam");
 		sC.classifyMessages("Spam");
