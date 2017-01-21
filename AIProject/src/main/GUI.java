@@ -27,8 +27,8 @@ public class GUI extends JFrame {
 	private JTextField catB;
 	private JTextField tRatio;
 	
-	private String spamFolder;
-	private String hamFolder;
+	private String catAFolder;
+	private String catBFolder;
 	private Double trainingRatio;
 	
 	private JButton f1Button;
@@ -135,12 +135,13 @@ public class GUI extends JFrame {
 		
 	}
 	
-	public String getSpamFolder() {
-		return spamFolder;
+	
+	public String getCatAFolder() {
+		return catAFolder;
 	}
 	
-	public String getHamFolder() {
-		return hamFolder;
+	public String getCatBFolder() {
+		return catBFolder;
 	}
 	
 	public Double getRatio() {
@@ -169,16 +170,16 @@ public class GUI extends JFrame {
 					}
 				}
 			} else if(event.getSource() == nextButton) {
-				spamFolder = folder1.getText();
-				hamFolder = folder2.getText();
+				catAFolder = folder1.getText();
+				catBFolder = folder2.getText();
 				try {
 					trainingRatio = Double.parseDouble(ratio.getText());
 				} catch (NumberFormatException e) {
 					e.printStackTrace(System.out);
 				}
 				
-				System.out.println(spamFolder);
-				System.out.println(hamFolder);
+				System.out.println(catAFolder);
+				System.out.println(catBFolder);
 				System.out.println(trainingRatio);
 			}
 		}
