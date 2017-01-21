@@ -13,6 +13,10 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
+import javax.swing.JFrame;
+
+import main.GUI;
+
 public class simpleClassifier {
 
 	public HashMap<String, String> dataSet;
@@ -21,6 +25,10 @@ public class simpleClassifier {
 	public HashMap<String, Integer> totalFilesPerType = new HashMap<String, Integer>();
 	public HashMap<String, Integer> filesIndexedPerType = new HashMap<String, Integer>(); /*Used to keep track how many files are indexed already, use in combination with trainRation to decide whether to train or test a file*/
 
+	int totalFilesChecked;
+	int correctlyIdentified;
+	
+	
 	/**
 	 * @param dataSet
 	 * @param trainRatio
@@ -42,8 +50,6 @@ public class simpleClassifier {
 			buildIndexes(type, dataSet.get(type));
 		}
 		normalizeIndexes();
-		testAccuracy(dataSet);
-
 	}
 
 	/**
@@ -99,7 +105,6 @@ public class simpleClassifier {
 
 	}
 
-
 	public void normalizeIndexes() {
 		for (String type : totalFilesPerType.keySet()) {
 			HashMap<String, Double> currentIndex = featureCountPerType.get(type);
@@ -110,69 +115,87 @@ public class simpleClassifier {
 		}
 	}
 
-	
-	
 	/**
 	 * @param dataSet
 	 * Test the accuracy
 	 */
-	public void testAccuracy(HashMap<String, String> dataSet) {
-		// Check accuracy for every type
-		for (String type : dataSet.keySet()) {
-			filesIndexedPerType.put(type, 0);
-			try (Stream<Path> paths = Files.walk(Paths.get(dataSet.get(type)))) {
+	public double testAccuracy(String type) {
+		totalFilesChecked = 0;
+		correctlyIdentified = 0;
+		//Reset filesIndexedPerType
+		for (String typeToReset : filesIndexedPerType.keySet()) {
+			filesIndexedPerType.put(typeToReset, 0);
+		}
+		//Go through all the files that needs to be tested
+		if (dataSet.containsKey(type)) {
+			String fileLocation = dataSet.get(type);
+			try (Stream<Path> paths = Files.walk(Paths.get(fileLocation))) {
 				paths.forEach(filePath -> {
 					if (Files.isRegularFile(filePath)) {
-						// Do something with each file if the ttestratio is
-						// reached
+						//Code above is a for-each loop for all the files on the fileLocation of certain type
+						//Code only gets executed for files that the classifier uses to test.
 						if ((double) filesIndexedPerType.get(type) / totalFilesPerType.get(type) > trainRatio) {
-							// File is to be tested
-							HashMap<String, Integer> typePreference = new HashMap<String, Integer>();
-							for (String typeToFill : featureCountPerType.keySet()) {
-								typePreference.put(typeToFill, 0);
+							if(identifyFileType(new File(filePath.toString())).equals(type) ){
+								correctlyIdentified++;
 							}
-							try {
-								Scanner scanner = new Scanner(new File(filePath.toString()));
-								while (scanner.hasNext()) {
-									String nextWord = scanner.next();
-									// Check which type fits best
-									HashMap<String, Double> typeWordScores = new HashMap<String, Double>();
-									for (String possibleType : featureCountPerType.keySet()) {
-										if (featureCountPerType.get(possibleType).containsKey(nextWord)) {
-											typeWordScores.put(possibleType,
-													featureCountPerType.get(possibleType).get(nextWord));
-										}
-									}
-								}
-								// Check which was best
-								String bestType = "";
-								double currentBest = 0;
-								for (String typeToCheck : typeWordScores.keySet()) {
-									if (typeWordScores.get(typeToCheck) > currentBest) {
-										currentBest = typeWordScores.get(typeToCheck);
-										bestType = typeToCheck;
-									}
-								}
-								if (!bestType.equals("")) {
-									typePreference.put(bestType, typePreference.get(bestType) + 1);
-								}
-
-							} catch (FileNotFoundException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+							totalFilesChecked++;
+							filesIndexedPerType.put(type, filesIndexedPerType.get(type) + 1);
 						} else {
 							filesIndexedPerType.put(type, filesIndexedPerType.get(type) + 1);
 						}
-
 					}
 				});
-			} catch (IOException e1) {
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
-
 		}
+		return (double)correctlyIdentified/totalFilesChecked;
+	}
+
+	public String identifyFileType(File file) {
+		//For every word, check which type it fits best, and add the key's value +1. At the end, the type with the highest score is selected.
+		HashMap<String, Integer> typePreference = new HashMap<String, Integer>();
+		try {
+			Scanner scanner = new Scanner(file);
+			while (scanner.hasNext()) {
+				String word = scanner.next();
+				//current feature score
+				double currentMax = 0;
+				String currentTypeGuess = "";
+				for (String type : featureCountPerType.keySet()) {
+					if (featureCountPerType.get(type).keySet().contains(word)) {
+						if (featureCountPerType.get(type).get(word) > currentMax) {
+							currentMax = featureCountPerType.get(type).get(word);
+							currentTypeGuess = type;
+						}
+					}
+				}
+				if(typePreference.containsKey(currentTypeGuess)) {
+					typePreference.put(currentTypeGuess, typePreference.get(currentTypeGuess) + 1);
+				} else {
+					typePreference.put(currentTypeGuess, 0);
+				}
+			}
+			//Gone through all the words, check which type has the highest integer in typePreference
+			if(!typePreference.isEmpty()) {
+				double currentMax = 0;
+				String currentTypeGuess = "";
+				for(String type: typePreference.keySet()) {
+					if(typePreference.get(type) > currentMax) {
+						currentMax = typePreference.get(type);
+						currentTypeGuess = type;
+					}
+				}
+				return currentTypeGuess;
+			} else {
+				return "none";
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "error";
 	}
 
 }
