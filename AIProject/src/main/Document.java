@@ -6,14 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import classifiers.correctClassifier;
+
 public class Document {
 	
 	public String name;
 	public String location;
-	public List<String> features = new ArrayList<String>();
+	public List<Feature> features = new ArrayList<Feature>();
 	public File file;
+	public Type type;
+	public correctClassifier classifier;
 
-	public Document(String name, String location) {
+	public Document(String name, String location, Type type, correctClassifier classifier) {
+		this.classifier = classifier;
+		this.type = type;
 		file = new File(location);
 		this.name = name;
 		this.location = location;	
@@ -23,7 +29,7 @@ public class Document {
 			while(scanner.hasNext()){
 				String feature = scanner.next().replaceAll("[^a-zA-Z]", "").toLowerCase();
 				if(!features.contains(feature)) {
-					features.add(feature);
+					features.add(new Feature(feature));
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -32,8 +38,13 @@ public class Document {
 		}
 	}
 	
-	public List<String> getFeatures(){
+	public List<Feature> getFeatures(){
 		return features;
+	}
+	
+	@Override
+	public String toString() {
+		return "Document name: " + name + ". Features: " + features.toString();
 	}
 	
 }
