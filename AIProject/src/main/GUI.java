@@ -38,6 +38,14 @@ public class GUI extends JFrame {
 	private JFileChooser fc;
 	private JFileChooser fc2;
 	
+	private JTextField folder3;
+	private JTextField toBeClassified;
+	private JButton f3Button;
+	private JFileChooser fc3;
+	private String toBeClassifiedPath;
+	private JButton classify;
+	private JButton back;
+	
 	GridBagConstraints gbc = new GridBagConstraints();
 	
 	public GUI() {
@@ -103,11 +111,44 @@ public class GUI extends JFrame {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		card1.add(nextButton, gbc);
 		
+		JPanel card2 = new JPanel(new GridBagLayout());
+		
+		toBeClassified = new JTextField("Folder to Classify: ");
+		toBeClassified.setEditable(false);
+		toBeClassified.setBorder(null);
+		gbc.gridx = 0;
+		gbc.gridy= 0;
+		card2.add(toBeClassified, gbc);
+		
+		folder3 = new JTextField(20);
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		card2.add(folder3, gbc);
+		
+		f3Button = new JButton("Choose folder");
+		gbc.gridx = 2;
+		gbc.gridy = 0;
+		card2.add(f3Button, gbc);
+		
+		classify = new JButton("Classify!");
+		gbc.gridx = 1;
+		gbc.gridy = 2;
+		//gbc.fill = GridBagConstraints.HORIZONTAL;
+		card2.add(classify, gbc);
+		
+		back = new JButton("Back");
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		card2.add(back, gbc);
+		
+		
+		
 		
 		
 		cards = new JPanel(new CardLayout());
 		
 		cards.add(card1, "Card 1");
+		cards.add(card2, "Card 2");
 		
 		CardLayout cardLayout = (CardLayout) cards.getLayout();
 		cardLayout.show(cards, "Card 1");
@@ -127,10 +168,18 @@ public class GUI extends JFrame {
 		fc2.setCurrentDirectory(new java.io.File("."));
 		fc2.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		
+		fc3 = new JFileChooser();
+		fc3.setDialogTitle("Choose folder");
+		fc3.setCurrentDirectory(new java.io.File("."));
+		fc3.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		
 		Handler handler = new Handler();
 		f1Button.addActionListener(handler);
 		f2Button.addActionListener(handler);
 		nextButton.addActionListener(handler);
+		f3Button.addActionListener(handler);
+		back.addActionListener(handler);
+		classify.addActionListener(handler);
 		
 		
 	}
@@ -175,12 +224,31 @@ public class GUI extends JFrame {
 				try {
 					trainingRatio = Double.parseDouble(ratio.getText());
 				} catch (NumberFormatException e) {
-					e.printStackTrace(System.out);
+					System.out.println("The number was not correct");
 				}
+				CardLayout cardLayout = (CardLayout) cards.getLayout();
+				cardLayout.show(cards, "Card 2");
 				
 				System.out.println(catAFolder);
 				System.out.println(catBFolder);
 				System.out.println(trainingRatio);
+			} else if(event.getSource() == f3Button) {
+				int option = fc3.showOpenDialog((Component)event.getSource());
+				if(option == JFileChooser.APPROVE_OPTION) {
+					try {
+					folder3.setText(fc3.getSelectedFile().getAbsolutePath());
+					} catch (Exception e) {
+						e.printStackTrace(System.out);
+					}
+				}
+			} else if(event.getSource() == back) {
+				CardLayout cardLayout = (CardLayout) cards.getLayout();
+				cardLayout.show(cards, "Card 1");
+			} else if(event.getSource() == classify) {
+				Results results = new Results();
+				results.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				results.setSize(650, 300);
+				results.setVisible(true);
 			}
 		}
 		
