@@ -6,38 +6,43 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+
+import classifiers.correctClassifier;
 
 public class GUI extends JFrame {
 
 	private JPanel cards;
-
+	
+//card 1 variables
 	private JTextField folder1;
 	private JTextField folder2;
 	private JTextField ratio;
-
+	private JTextField catAName;
+	private JTextField catBName;
 	private JTextField catA;
 	private JTextField catB;
+	private JTextField staticVocab;
+	private JTextField vocabSize;
 	private JTextField tRatio;
-
 	private String catAFolder;
 	private String catBFolder;
 	private Double trainingRatio;
-
 	private JButton f1Button;
 	private JButton f2Button;
 	private JButton nextButton;
-
 	private JFileChooser fc;
 	private JFileChooser fc2;
-
+	
+//card 2 variables
+	private JTextField staticAccuracy;
+	private JTextField accuracy;
 	private JTextField folder3;
 	private JTextField toBeClassified;
 	private JButton f3Button;
@@ -45,18 +50,20 @@ public class GUI extends JFrame {
 	private String toBeClassifiedPath;
 	private JButton classify;
 	private JButton back;
+	private JButton trainingHelp;
 
+//card 3 variables
 	private JTextField classifiedAs;
 	private JTextField question;
-
 	private JTextField resultDoc;
-
 	private JButton correct;
 	private JButton notCorrect;
+	
+	private CardLayout cardLayout;
 
 	GridBagConstraints gbc = new GridBagConstraints();
 
-	public GUI() {
+	public GUI(correctClassifier correctClassifier) {
 		super("Classifier");
 		setLayout(new FlowLayout());
 
@@ -67,17 +74,27 @@ public class GUI extends JFrame {
 		gbc.weightx = 0.25;
 		gbc.weighty = 1;
 
-		catA = new JTextField("Catagorie A: ");
-		catA.setEditable(false);
-		catA.setBorder(null);
+		catAName = new JTextField("Name: ");
+		catAName.setEditable(false);
+		catAName.setBorder(null);
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		card1.add(catA, gbc);
+		card1.add(catAName, gbc);
 
-		catB = new JTextField("Catagorie B: ");
-		catB.setEditable(false);
-		catB.setBorder(null);
+		catBName = new JTextField("Name: ");
+		catBName.setEditable(false);
+		catBName.setBorder(null);
 		gbc.gridx = 0;
+		gbc.gridy = 1;
+		card1.add(catBName, gbc);
+		
+		catA = new JTextField(20);
+		gbc.gridx= 1;
+		gbc.gridy= 0;
+		card1.add(catA, gbc);
+		
+		catB = new JTextField(20);
+		gbc.gridx = 1;
 		gbc.gridy = 1;
 		card1.add(catB, gbc);
 
@@ -87,14 +104,27 @@ public class GUI extends JFrame {
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		card1.add(tRatio, gbc);
+		
+		staticVocab = new JTextField("Vocabulary size: ");
+		staticVocab.setEditable(false);
+		staticVocab.setBorder(null);
+		gbc.gridx = 0;
+		gbc.gridy= 3;
+		card1.add(staticVocab, gbc);
+		
+		vocabSize = new JTextField(20);
+		gbc.gridx = 1;
+		gbc.gridy = 3;
+		card1.add(vocabSize, gbc);
+		
 
 		folder1 = new JTextField(20);
-		gbc.gridx = 1;
+		gbc.gridx = 2;
 		gbc.gridy = 0;
 		card1.add(folder1, gbc);
 
 		folder2 = new JTextField(20);
-		gbc.gridx = 1;
+		gbc.gridx = 2;
 		gbc.gridy = 1;
 		card1.add(folder2, gbc);
 
@@ -104,59 +134,82 @@ public class GUI extends JFrame {
 		card1.add(ratio, gbc);
 
 		f1Button = new JButton("Choose folder");
-		gbc.gridx = 2;
+		gbc.gridx = 3;
 		gbc.gridy = 0;
 		card1.add(f1Button, gbc);
 
 		f2Button = new JButton("Choose folder");
-		gbc.gridx = 2;
+		gbc.gridx = 3;
 		gbc.gridy = 1;
 		card1.add(f2Button, gbc);
 
 		nextButton = new JButton("next");
-		gbc.gridx = 2;
-		gbc.gridy = 3;
+		gbc.gridx = 3;
+		gbc.gridy = 4;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		card1.add(nextButton, gbc);
 
+		
+		//Second screen will be made
+		
 		JPanel card2 = new JPanel(new GridBagLayout());
 
 		toBeClassified = new JTextField("Folder to Classify: ");
 		toBeClassified.setEditable(false);
 		toBeClassified.setBorder(null);
 		gbc.gridx = 0;
-		gbc.gridy = 0;
+		gbc.gridy = 1;
 		card2.add(toBeClassified, gbc);
+		
+		staticAccuracy = new JTextField("The total accuracy is: ");
+		staticAccuracy.setEditable(false);
+		staticAccuracy.setBorder(null);
+		gbc.gridx =0;
+		gbc.gridy=0;
+		card2.add(staticAccuracy, gbc);
+		
+		accuracy = new JTextField(20);
+		accuracy.setEditable(false);
+		accuracy.setBorder(null);
+		gbc.gridx = 1;
+		gbc.gridy= 0;
+		card2.add(accuracy, gbc);
 
 		folder3 = new JTextField(20);
 		gbc.gridx = 1;
-		gbc.gridy = 0;
+		gbc.gridy = 1;
 		card2.add(folder3, gbc);
 
 		f3Button = new JButton("Choose folder");
 		gbc.gridx = 2;
-		gbc.gridy = 0;
+		gbc.gridy = 1;
 		card2.add(f3Button, gbc);
 
 		classify = new JButton("Classify!");
 		gbc.gridx = 1;
 		gbc.gridy = 2;
-		// gbc.fill = GridBagConstraints.HORIZONTAL;
 		card2.add(classify, gbc);
 
 		back = new JButton("Back");
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		card2.add(back, gbc);
+		
+		trainingHelp = new JButton("Help training!");
+		gbc.gridx=2;
+		gbc.gridy=2;
+		card2.add(trainingHelp, gbc);
 
+		//Third screen will be made
+		
 		JPanel card3 = new JPanel(new GridBagLayout());
 
 		gbc.insets = new Insets(4, 4, 4, 4);
 
-		classifiedAs = new JTextField("This document has been classified as: ");
+		classifiedAs = new JTextField(20);
 		classifiedAs.setEditable(false);
 		classifiedAs.setBorder(null);
-		gbc.gridx = 1;
+		gbc.gridx = 0;
 		gbc.gridy = 0;
 		card3.add(classifiedAs, gbc);
 
@@ -190,7 +243,7 @@ public class GUI extends JFrame {
 		cards.add(card2, "Card 2");
 		cards.add(card3, "Card 3");
 
-		CardLayout cardLayout = (CardLayout) cards.getLayout();
+		cardLayout = (CardLayout) cards.getLayout();
 		cardLayout.show(cards, "Card 1");
 
 		getContentPane().add(cards);
@@ -210,13 +263,76 @@ public class GUI extends JFrame {
 		fc3.setCurrentDirectory(new java.io.File("."));
 		fc3.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-		Handler handler = new Handler();
-		f1Button.addActionListener(handler);
-		f2Button.addActionListener(handler);
-		nextButton.addActionListener(handler);
-		f3Button.addActionListener(handler);
-		back.addActionListener(handler);
-		classify.addActionListener(handler);
+		
+		f1Button.addActionListener(event -> {
+			int option = fc.showOpenDialog((Component) event.getSource());
+			if (option == JFileChooser.APPROVE_OPTION) {
+				try {
+					folder1.setText(fc.getSelectedFile().getAbsolutePath());
+					
+				} catch (Exception e) {
+					e.printStackTrace(System.out);
+				}
+			}
+		});
+		
+		f2Button.addActionListener(event -> {
+			int option = fc2.showOpenDialog((Component) event.getSource());
+			if (option == JFileChooser.APPROVE_OPTION) {
+				try {
+					folder2.setText(fc2.getSelectedFile().getAbsolutePath());
+				} catch (Exception e) {
+					e.printStackTrace(System.out);
+				}
+			}
+			
+		});
+		
+		nextButton.addActionListener(event -> {
+			correctClassifier.addType(catA.getText(), folder1.getText());
+			correctClassifier.addType(catB.getText(), folder2.getText());
+			try {
+				correctClassifier.trainingRatio = Double.parseDouble(ratio.getText());
+				correctClassifier.selectVocabulary(Integer.parseInt(vocabSize.getText()));
+			} catch (NumberFormatException e) {
+				System.out.println("The number was not correct");
+			}
+			correctClassifier.testClassifier();
+			
+			cardLayout.show(cards, "Card 2");
+		});
+		
+		f3Button.addActionListener(event -> {
+			int option = fc3.showOpenDialog((Component) event.getSource());
+			if (option == JFileChooser.APPROVE_OPTION) {
+				try {
+					folder3.setText(fc3.getSelectedFile().getAbsolutePath());
+				} catch (Exception e) {
+					e.printStackTrace(System.out);
+				}
+			}
+		});
+		
+		back.addActionListener(event -> {
+			cardLayout.show(cards, "Card 1");
+		});
+		
+		trainingHelp.addActionListener(event -> {
+			if(!(correctClassifier.wrongClassified.isEmpty())) {
+				
+			}
+			classifiedAs.setText("Document ......  is classified as: ");
+			resultDoc.setText("spam");
+			cardLayout.show(cards, "Card 3");
+		});
+		
+		correct.addActionListener(event -> {
+			resultDoc.setText("spm"); //moet een getter bij voor het volgende document
+		});
+		
+		notCorrect.addActionListener(event -> {
+			resultDoc.setText("ham"); //moet dezelfde getter bij
+		});
 
 	}
 
@@ -230,61 +346,6 @@ public class GUI extends JFrame {
 
 	public Double getRatio() {
 		return trainingRatio;
-	}
-
-	private class Handler implements ActionListener {
-
-		public void actionPerformed(ActionEvent event) {
-			if (event.getSource() == f1Button) {
-				int option = fc.showOpenDialog((Component) event.getSource());
-				if (option == JFileChooser.APPROVE_OPTION) {
-					try {
-						folder1.setText(fc.getSelectedFile().getAbsolutePath());
-					} catch (Exception e) {
-						e.printStackTrace(System.out);
-					}
-				}
-			} else if (event.getSource() == f2Button) {
-				int option = fc2.showOpenDialog((Component) event.getSource());
-				if (option == JFileChooser.APPROVE_OPTION) {
-					try {
-						folder2.setText(fc2.getSelectedFile().getAbsolutePath());
-					} catch (Exception e) {
-						e.printStackTrace(System.out);
-					}
-				}
-			} else if (event.getSource() == nextButton) {
-				catAFolder = folder1.getText();
-				catBFolder = folder2.getText();
-				try {
-					trainingRatio = Double.parseDouble(ratio.getText());
-				} catch (NumberFormatException e) {
-					System.out.println("The number was not correct");
-				}
-				CardLayout cardLayout = (CardLayout) cards.getLayout();
-				cardLayout.show(cards, "Card 2");
-
-				System.out.println(catAFolder);
-				System.out.println(catBFolder);
-				System.out.println(trainingRatio);
-			} else if (event.getSource() == f3Button) {
-				int option = fc3.showOpenDialog((Component) event.getSource());
-				if (option == JFileChooser.APPROVE_OPTION) {
-					try {
-						folder3.setText(fc3.getSelectedFile().getAbsolutePath());
-					} catch (Exception e) {
-						e.printStackTrace(System.out);
-					}
-				}
-			} else if (event.getSource() == back) {
-				CardLayout cardLayout = (CardLayout) cards.getLayout();
-				cardLayout.show(cards, "Card 1");
-			} else if (event.getSource() == classify) {
-				CardLayout cardLayout = (CardLayout) cards.getLayout();
-				cardLayout.show(cards, "Card 3");
-			}
-		}
-
 	}
 
 }
