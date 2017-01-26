@@ -70,7 +70,11 @@ public class ChiSquare {
 		//			System.out.println("\n");
 		//		}
 
-		return result;
+		if(Double.isNaN(result)) {
+			return 0;
+		} else {
+			return result;
+		}
 	}
 
 }
