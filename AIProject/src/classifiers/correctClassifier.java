@@ -55,7 +55,7 @@ public class correctClassifier {
 		System.out.println(vocabulary);
 	}
 
-	public void testClassifier() {
+	public double testClassifier() {
 		int total = 0;
 		int right = 0;
 		int wrong = 0;
@@ -63,25 +63,28 @@ public class correctClassifier {
 		for (Type type : types) {
 			for (Document document : type.documentsNotTrained) {
 				if (this.classifyDocument(document).equals(type)) {
-					System.out.println("Correct");
+//					System.out.println("Correct");
 					right++;
 					total++;
 				} else {
-					System.out.println("incorrect, guessed: " + this.classifyDocument(document).name + ". Was "
-							+ type.name + "name: " + document.name);
+//					System.out.println("incorrect, guessed: " + this.classifyDocument(document).name + ". Was "
+//							+ type.name + "name: " + document.name);
 					wrong++;
 					total++;
 					wrongClassified.add(document);
 				}
+//				System.exit(0);
 			}
 		}
 		System.out.println((double) right / total);
+		return((double) right / total);
 	}
 
 	public Type classifyDocument(Document document) {
 		//Remove words not in vocabulary
 		List<String> vocabInDocument = new ArrayList<String>(document.features);
 		vocabInDocument.retainAll(vocabulary);
+//		System.out.println(vocabInDocument);
 		Type result = types.get(0);
 		double currentmax = -100000;
 		for (Type type : types) {
