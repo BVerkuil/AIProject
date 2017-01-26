@@ -42,6 +42,10 @@ public class Document {
 		return features;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	@Override
 	public String toString() {
 		return "Document name: " + name + ". Features: " + features.toString();

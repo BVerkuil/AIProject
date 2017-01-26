@@ -6,12 +6,12 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import classifiers.correctClassifier;
@@ -58,6 +58,9 @@ public class GUI extends JFrame {
 	private JTextField resultDoc;
 	private JButton correct;
 	private JButton notCorrect;
+	
+//other variables
+	private Iterator iterate;
 	
 	private CardLayout cardLayout;
 
@@ -206,18 +209,20 @@ public class GUI extends JFrame {
 
 		gbc.insets = new Insets(4, 4, 4, 4);
 
-		classifiedAs = new JTextField(20);
+		classifiedAs = new JTextField();
 		classifiedAs.setEditable(false);
 		classifiedAs.setBorder(null);
-		gbc.gridx = 0;
+		gbc.gridx = 1;
 		gbc.gridy = 0;
+		gbc.fill = gbc.CENTER;
 		card3.add(classifiedAs, gbc);
 
-		question = new JTextField("Is this correct?");
+		question = new JTextField("What is the correct class?");
 		question.setEditable(false);
 		question.setBorder(null);
 		gbc.gridx = 1;
 		gbc.gridy = 1;
+		gbc.fill = gbc.CENTER;
 		card3.add(question, gbc);
 
 		resultDoc = new JTextField();
@@ -289,6 +294,8 @@ public class GUI extends JFrame {
 		});
 		
 		nextButton.addActionListener(event -> {
+			correct.setText(catA.getText());
+			notCorrect.setText(catB.getText());
 			correctClassifier.addType(catA.getText(), folder1.getText());
 			correctClassifier.addType(catB.getText(), folder2.getText());
 			try {
@@ -318,19 +325,33 @@ public class GUI extends JFrame {
 		});
 		
 		trainingHelp.addActionListener(event -> {
-			if(!(correctClassifier.wrongClassified.isEmpty())) {
-				
+			iterate = correctClassifier.wrongClassified.iterator();
+			if(iterate.hasNext()) {
+				System.out.println(((Document) iterate.next()).getName());
+				classifiedAs.setText("Document \"" + ((Document) iterate.next()).getName() +  "\" has not been classified correct ");
 			}
-			classifiedAs.setText("Document ......  is classified as: ");
+			
 			resultDoc.setText("spam");
 			cardLayout.show(cards, "Card 3");
 		});
 		
 		correct.addActionListener(event -> {
+			if(iterate.hasNext()) {
+			classifiedAs.setText("Document \"" + ((Document) iterate.next()).getName() +  "\" is classified as: ");
+			} else {
+				// set new accuracy
+				cardLayout.show(cards, "Card 2");
+			}
 			resultDoc.setText("spm"); //moet een getter bij voor het volgende document
 		});
 		
 		notCorrect.addActionListener(event -> {
+			if(iterate.hasNext()) {
+				classifiedAs.setText("Document \"" + ((Document) iterate.next()).getName() +  "\" is classified as: ");
+				} else {
+					// set new accuracy
+					cardLayout.show(cards, "Card 2");
+				}
 			resultDoc.setText("ham"); //moet dezelfde getter bij
 		});
 
