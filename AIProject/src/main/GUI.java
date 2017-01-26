@@ -6,11 +6,14 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -39,9 +42,9 @@ public class GUI extends JFrame {
 	private JButton nextButton;
 	private JFileChooser fc;
 	private JFileChooser fc2;
+	private JLabel loadingLabel;
 	
 //card 2 variables
-	private JTextField staticAccuracy;
 	private JTextField accuracy;
 	private JTextField folder3;
 	private JTextField toBeClassified;
@@ -151,6 +154,13 @@ public class GUI extends JFrame {
 		gbc.gridy = 4;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		card1.add(nextButton, gbc);
+		
+		ImageIcon loading = new ImageIcon("ajax-loader.gif");
+		loadingLabel = new JLabel("loading... ", loading, JLabel.CENTER);
+		loadingLabel.setVisible(false);
+		gbc.gridx= 2;
+		gbc.gridy= 4;
+	    card1.add(loadingLabel, gbc);
 
 		
 		//Second screen will be made
@@ -164,18 +174,12 @@ public class GUI extends JFrame {
 		gbc.gridy = 1;
 		card2.add(toBeClassified, gbc);
 		
-		staticAccuracy = new JTextField("The total accuracy is: ");
-		staticAccuracy.setEditable(false);
-		staticAccuracy.setBorder(null);
-		gbc.gridx =0;
-		gbc.gridy=0;
-		card2.add(staticAccuracy, gbc);
-		
 		accuracy = new JTextField(20);
 		accuracy.setEditable(false);
 		accuracy.setBorder(null);
 		gbc.gridx = 1;
 		gbc.gridy= 0;
+		gbc.fill = GridBagConstraints.CENTER;
 		card2.add(accuracy, gbc);
 
 		folder3 = new JTextField(20);
@@ -186,21 +190,25 @@ public class GUI extends JFrame {
 		f3Button = new JButton("Choose folder");
 		gbc.gridx = 2;
 		gbc.gridy = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		card2.add(f3Button, gbc);
 
 		classify = new JButton("Classify!");
 		gbc.gridx = 1;
 		gbc.gridy = 2;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		card2.add(classify, gbc);
 
 		back = new JButton("Back");
 		gbc.gridx = 0;
 		gbc.gridy = 2;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		card2.add(back, gbc);
 		
 		trainingHelp = new JButton("Help training!");
 		gbc.gridx=2;
 		gbc.gridy=2;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		card2.add(trainingHelp, gbc);
 
 		//Third screen will be made
@@ -214,7 +222,7 @@ public class GUI extends JFrame {
 		classifiedAs.setBorder(null);
 		gbc.gridx = 1;
 		gbc.gridy = 0;
-		gbc.fill = gbc.CENTER;
+		gbc.fill = GridBagConstraints.CENTER;
 		card3.add(classifiedAs, gbc);
 
 		question = new JTextField("What is the correct class?");
@@ -222,7 +230,7 @@ public class GUI extends JFrame {
 		question.setBorder(null);
 		gbc.gridx = 1;
 		gbc.gridy = 1;
-		gbc.fill = gbc.CENTER;
+		gbc.fill = GridBagConstraints.CENTER;
 		card3.add(question, gbc);
 
 		resultDoc = new JTextField();
@@ -294,6 +302,7 @@ public class GUI extends JFrame {
 		});
 		
 		nextButton.addActionListener(event -> {
+			loadingLabel.setVisible(true);
 			correct.setText(catA.getText());
 			notCorrect.setText(catB.getText());
 			correctClassifier.addType(catA.getText(), folder1.getText());
@@ -304,8 +313,9 @@ public class GUI extends JFrame {
 			} catch (NumberFormatException e) {
 				System.out.println("The number was not correct");
 			}
-			correctClassifier.testClassifier();
 			
+			DecimalFormat numberFormat = new DecimalFormat("#0.00");
+			accuracy.setText("The accuracy is : " + numberFormat.format(correctClassifier.testClassifier()));
 			cardLayout.show(cards, "Card 2");
 		});
 		
@@ -342,7 +352,6 @@ public class GUI extends JFrame {
 				// set new accuracy
 				cardLayout.show(cards, "Card 2");
 			}
-			resultDoc.setText("spm"); //moet een getter bij voor het volgende document
 		});
 		
 		notCorrect.addActionListener(event -> {
@@ -352,7 +361,6 @@ public class GUI extends JFrame {
 					// set new accuracy
 					cardLayout.show(cards, "Card 2");
 				}
-			resultDoc.setText("ham"); //moet dezelfde getter bij
 		});
 
 	}
