@@ -4,68 +4,59 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 public class Results extends JFrame{
 	
-	private JTextField catAclasses;
-	private JTextField catBclasses;
-	private JTextField accuracy;
+	private JTextField classifiedAs;
+	private JTextField question;
 	
-	private JTextField resultCatA;
-	private JTextField resultCatB;
-	private JTextField resultAccuracy;
+	private JTextField resultDoc;
+	
+	private JButton correct;
+	private JButton notCorrect;
 	
 	GridBagConstraints gbc = new GridBagConstraints();
 	
 	public Results() {
-		super("Results");
+		super("Classify");
 		setLayout(new GridBagLayout());
 		
 		gbc.insets = new Insets(4,4,4,4);
 		
-		catAclasses = new JTextField("Number of catagory A documents: ");
-		catAclasses.setEditable(false);
-		catAclasses.setBorder(null);
-		gbc.gridx = 0;
+		classifiedAs = new JTextField("This document has been classified as: ");
+		classifiedAs.setEditable(false);
+		classifiedAs.setBorder(null);
+		gbc.gridx = 1;
 		gbc.gridy= 0;
-		add(catAclasses, gbc);
+		add(classifiedAs, gbc);
 		
-		catBclasses = new JTextField("Number of catagory B documents: ");
-		catBclasses.setEditable(false);
-		catBclasses.setBorder(null);
-		gbc.gridx  = 0;
+		question = new JTextField("Is this correct?");
+		question.setEditable(false);
+		question.setBorder(null);
+		gbc.gridx  = 1;
 		gbc.gridy = 1;
-		add(catBclasses,gbc);
+		add(question,gbc);
 		
-		accuracy = new JTextField("Accuracy: ");
-		accuracy.setEditable(false);
-		accuracy.setBorder(null);
-		gbc.gridx = 0;
-		gbc.gridy = 2;
-		add(accuracy, gbc);
-		
-		resultCatA = new JTextField();
-		resultCatA.setEditable(false);
-		resultCatA.setBorder(null);
+		resultDoc = new JTextField();
+		resultDoc.setEditable(false);
+		resultDoc.setBorder(null);
 		gbc.gridx = 1;
 		gbc.gridy = 0;
-		add(resultCatA, gbc);
+		add(resultDoc, gbc);
 		
-		resultCatB = new JTextField();
-		resultCatB.setEditable(false);
-		resultCatB.setBorder(null);
-		gbc.gridx = 1;
-		gbc.gridy = 1;
-		add(resultCatB, gbc);
-		
-		resultAccuracy = new JTextField();
-		resultAccuracy.setEditable(false);
-		resultAccuracy.setBorder(null);
-		gbc.gridx = 1;
+		correct = new JButton("Yes");
+		gbc.gridx = 0;
 		gbc.gridy = 2;
-		add(resultAccuracy, gbc);
+		add(correct, gbc);
+		
+		notCorrect = new JButton("No");
+		gbc.gridx = 2;
+		gbc.gridy = 2;
+		add(notCorrect, gbc);
+
 		
 		
 	}
