@@ -12,7 +12,7 @@ public class Document {
 	
 	public String name;
 	public String location;
-	public List<Feature> features = new ArrayList<Feature>();
+	public List<String> features = new ArrayList<String>();
 	public File file;
 	public Type type;
 	public correctClassifier classifier;
@@ -28,8 +28,8 @@ public class Document {
 			scanner = new Scanner(file);
 			while(scanner.hasNext()){
 				String feature = scanner.next().replaceAll("[^a-zA-Z]", "").toLowerCase();
-				if(!features.contains(feature)) {
-					features.add(new Feature(feature));
+				if(!features.contains(feature) && !feature.equals("")) {
+					features.add(feature);
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -38,7 +38,7 @@ public class Document {
 		}
 	}
 	
-	public List<Feature> getFeatures(){
+	public List<String> getFeatures(){
 		return features;
 	}
 	

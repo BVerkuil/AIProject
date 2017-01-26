@@ -10,11 +10,14 @@ public class Main {
 		//		gui.setSize(650, 300);
 		//		gui.setVisible(true);
 
-		correctClassifier correctClassifier = new correctClassifier();
-		correctClassifier.addType("Ham", "../AIProject/Ham");
-		correctClassifier.addType("Spam", "../AIProject/Spam");
-		System.out.println(correctClassifier.features.size());
-		correctClassifier.selectFeatures();
+		correctClassifier correctClassifier = new correctClassifier(0.9);
+		System.out.println("making Ham");
+		correctClassifier.addType("Ham", "/home/bart/Documents/AI-Project/corpus-mails/Ham");
+//		correctClassifier.addType("Ham", "../AIProject/Ham");
+		correctClassifier.addType("Spam", "/home/bart/Documents/AI-Project/corpus-mails/Spam");
+//		correctClassifier.addType("Spam", "../AIProject/Spam");
+		correctClassifier.selectVocabulary(300);
+		correctClassifier.testClassifier();
 	}
 
 }
