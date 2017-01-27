@@ -78,6 +78,10 @@ public class correctClassifier {
 			for (Document document : type.documentsNotTrained) {
 				if (this.classifyDocument(document).equals(type)) {
 					type.documents.add(document);
+					type.documentsNotTrained.remove(document);
+					if(wrongClassified.contains(document)) {
+						wrongClassified.remove(document);
+					}
 					right++;
 					total++;
 				} else {
@@ -124,6 +128,7 @@ public class correctClassifier {
 	
 	public void addDocumentAfterFeedback(Type newType, Document document) {
 		newType.documents.add(document);
+		newType.documentsNotTrained.remove(document);
 	}
 
 	public void rebuildClassifier() {
@@ -131,6 +136,7 @@ public class correctClassifier {
 			type.buildFeatureMap();
 		}
 		selectVocabulary();
+		
 	}
 	
 	public void setVocabularySize(int size) {

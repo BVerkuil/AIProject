@@ -22,8 +22,8 @@ import classifiers.correctClassifier;
 public class GUI extends JFrame {
 
 	private JPanel cards;
-	
-//card 1 variables
+
+	//card 1 variables
 	private JTextField folder1;
 	private JTextField folder2;
 	private JTextField ratio;
@@ -43,8 +43,8 @@ public class GUI extends JFrame {
 	private JFileChooser fc;
 	private JFileChooser fc2;
 	private JLabel loadingLabel;
-	
-//card 2 variables
+
+	//card 2 variables
 	private JTextField accuracy;
 	private JTextField folder3;
 	private JTextField toBeClassified;
@@ -55,16 +55,16 @@ public class GUI extends JFrame {
 	private JButton back;
 	private JButton trainingHelp;
 
-//card 3 variables
+	//card 3 variables
 	private JTextField classifiedAs;
 	private JTextField question;
 	private JTextField resultDoc;
 	private JButton correct;
 	private JButton notCorrect;
-	
-//other variables
+
+	//other variables
 	private Iterator iterate;
-	
+
 	private CardLayout cardLayout;
 
 	GridBagConstraints gbc = new GridBagConstraints();
@@ -93,12 +93,12 @@ public class GUI extends JFrame {
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		card1.add(catBName, gbc);
-		
+
 		catA = new JTextField(20);
-		gbc.gridx= 1;
-		gbc.gridy= 0;
+		gbc.gridx = 1;
+		gbc.gridy = 0;
 		card1.add(catA, gbc);
-		
+
 		catB = new JTextField(20);
 		gbc.gridx = 1;
 		gbc.gridy = 1;
@@ -110,19 +110,18 @@ public class GUI extends JFrame {
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		card1.add(tRatio, gbc);
-		
+
 		staticVocab = new JTextField("Vocabulary size: ");
 		staticVocab.setEditable(false);
 		staticVocab.setBorder(null);
 		gbc.gridx = 0;
-		gbc.gridy= 3;
+		gbc.gridy = 3;
 		card1.add(staticVocab, gbc);
-		
+
 		vocabSize = new JTextField(20);
 		gbc.gridx = 1;
 		gbc.gridy = 3;
 		card1.add(vocabSize, gbc);
-		
 
 		folder1 = new JTextField(20);
 		gbc.gridx = 2;
@@ -154,17 +153,16 @@ public class GUI extends JFrame {
 		gbc.gridy = 4;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		card1.add(nextButton, gbc);
-		
+
 		ImageIcon loading = new ImageIcon("ajax-loader.gif");
 		loadingLabel = new JLabel("loading... ", loading, JLabel.CENTER);
 		loadingLabel.setVisible(false);
-		gbc.gridx= 2;
-		gbc.gridy= 4;
-	    card1.add(loadingLabel, gbc);
+		gbc.gridx = 2;
+		gbc.gridy = 4;
+		card1.add(loadingLabel, gbc);
 
-		
 		//Second screen will be made
-		
+
 		JPanel card2 = new JPanel(new GridBagLayout());
 
 		toBeClassified = new JTextField("Folder to Classify: ");
@@ -173,12 +171,12 @@ public class GUI extends JFrame {
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		card2.add(toBeClassified, gbc);
-		
+
 		accuracy = new JTextField(20);
 		accuracy.setEditable(false);
 		accuracy.setBorder(null);
 		gbc.gridx = 1;
-		gbc.gridy= 0;
+		gbc.gridy = 0;
 		gbc.fill = GridBagConstraints.CENTER;
 		card2.add(accuracy, gbc);
 
@@ -204,15 +202,15 @@ public class GUI extends JFrame {
 		gbc.gridy = 2;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		card2.add(back, gbc);
-		
+
 		trainingHelp = new JButton("Help training!");
-		gbc.gridx=2;
-		gbc.gridy=2;
+		gbc.gridx = 2;
+		gbc.gridy = 2;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		card2.add(trainingHelp, gbc);
 
 		//Third screen will be made
-		
+
 		JPanel card3 = new JPanel(new GridBagLayout());
 
 		gbc.insets = new Insets(4, 4, 4, 4);
@@ -276,19 +274,18 @@ public class GUI extends JFrame {
 		fc3.setCurrentDirectory(new java.io.File("."));
 		fc3.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-		
 		f1Button.addActionListener(event -> {
 			int option = fc.showOpenDialog((Component) event.getSource());
 			if (option == JFileChooser.APPROVE_OPTION) {
 				try {
 					folder1.setText(fc.getSelectedFile().getAbsolutePath());
-					
+
 				} catch (Exception e) {
 					e.printStackTrace(System.out);
 				}
 			}
 		});
-		
+
 		f2Button.addActionListener(event -> {
 			int option = fc2.showOpenDialog((Component) event.getSource());
 			if (option == JFileChooser.APPROVE_OPTION) {
@@ -298,9 +295,9 @@ public class GUI extends JFrame {
 					e.printStackTrace(System.out);
 				}
 			}
-			
+
 		});
-		
+
 		nextButton.addActionListener(event -> {
 			loadingLabel.setVisible(true);
 			correct.setText(catA.getText());
@@ -313,12 +310,12 @@ public class GUI extends JFrame {
 			} catch (NumberFormatException e) {
 				System.out.println("The number was not correct");
 			}
-			
+
 			DecimalFormat numberFormat = new DecimalFormat("#0.00");
 			accuracy.setText("The accuracy is : " + numberFormat.format(correctClassifier.testClassifier()));
 			cardLayout.show(cards, "Card 2");
 		});
-		
+
 		f3Button.addActionListener(event -> {
 			int option = fc3.showOpenDialog((Component) event.getSource());
 			if (option == JFileChooser.APPROVE_OPTION) {
@@ -329,38 +326,39 @@ public class GUI extends JFrame {
 				}
 			}
 		});
-		
+
 		back.addActionListener(event -> {
 			cardLayout.show(cards, "Card 1");
 		});
-		
+
 		trainingHelp.addActionListener(event -> {
 			iterate = correctClassifier.wrongClassified.iterator();
-			if(iterate.hasNext()) {
+			if (iterate.hasNext()) {
 				System.out.println(((Document) iterate.next()).getName());
-				classifiedAs.setText("Document \"" + ((Document) iterate.next()).getName() +  "\" has not been classified correct ");
+				classifiedAs.setText(
+						"Document \"" + ((Document) iterate.next()).getName() + "\" has not been classified correct ");
 			}
-			
+
 			resultDoc.setText("spam");
 			cardLayout.show(cards, "Card 3");
 		});
-		
+
 		correct.addActionListener(event -> {
-			if(iterate.hasNext()) {
-			classifiedAs.setText("Document \"" + ((Document) iterate.next()).getName() +  "\" is classified as: ");
+			if (iterate.hasNext()) {
+				classifiedAs.setText("Document \"" + ((Document) iterate.next()).getName() + "\" is classified as: ");
 			} else {
 				// set new accuracy
 				cardLayout.show(cards, "Card 2");
 			}
 		});
-		
+
 		notCorrect.addActionListener(event -> {
-			if(iterate.hasNext()) {
-				classifiedAs.setText("Document \"" + ((Document) iterate.next()).getName() +  "\" is classified as: ");
-				} else {
-					// set new accuracy
-					cardLayout.show(cards, "Card 2");
-				}
+			if (iterate.hasNext()) {
+				classifiedAs.setText("Document \"" + ((Document) iterate.next()).getName() + "\" is classified as: ");
+			} else {
+				// set new accuracy
+				cardLayout.show(cards, "Card 2");
+			}
 		});
 
 	}
