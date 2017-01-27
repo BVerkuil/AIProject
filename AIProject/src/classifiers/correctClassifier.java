@@ -44,6 +44,7 @@ public class correctClassifier {
 	}
 
 	public void selectVocabulary() {
+		vocabulary.features.clear();
 		TreeMap<Float, String> chiSquarePerFeature = new TreeMap<Float, String>();
 		chiSquare = new ChiSquare(this);
 		for (String feature : features) {
@@ -66,8 +67,8 @@ public class correctClassifier {
 			retained.retainAll(vocabulary.features);
 			type.vocabFeatures = retained.size();
 		}
-		System.out.println(vocabulary.features);
 		vocabulary.calculateValues();
+		System.out.println(vocabulary.features);
 	}
 
 	public double testClassifier() {
@@ -90,7 +91,7 @@ public class correctClassifier {
 					wrongClassified.add(document);
 				}
 			}
-			type.documentsNotTrained.removeAll(toRemove);
+//			type.documentsNotTrained.removeAll(toRemove);
 		}
 		return ((double) right / total);
 	}
@@ -129,16 +130,21 @@ public class correctClassifier {
 	}
 
 	public void addDocumentAfterFeedback(Type newType, Document document) {
+		for(Type type: types) {
+			if(type.documentsNotTrained.contains(document)) {
+				type.documentsNotTrained.remove(document);
+			}
+		}
 		newType.documents.add(document);
-		newType.documentsNotTrained.remove(document);
 	}
 
 	public void rebuildClassifier() {
+		System.out.println("rebuilding");
 		for (Type type : types) {
 			type.buildFeatureMap();
 		}
 		selectVocabulary();
-
+		System.out.println(testClassifier());
 	}
 
 	public void setVocabularySize(int size) {
