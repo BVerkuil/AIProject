@@ -1,11 +1,17 @@
 package classifiers;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import main.ChiSquare;
 import main.Document;
@@ -19,7 +25,8 @@ public class correctClassifier {
 	public double trainingRatio;
 	public int totalAmountOfDocuments = 0;
 	public List<Document> wrongClassified = new ArrayList<Document>();
-	public List<String> blackList = new ArrayList<String>(Arrays.asList("by", "an", "you", "it", "from", "have", "if", "the", "a"));
+	public List<String> blackList = new ArrayList<String>(
+			Arrays.asList("by", "an", "you", "it", "from", "have", "if", "the", "a"));
 	public Vocabulary vocabulary = new Vocabulary(this);
 	public int vocabSize;
 
@@ -89,7 +96,7 @@ public class correctClassifier {
 					wrongClassified.add(document);
 				}
 			}
-//			type.documentsNotTrained.removeAll(toRemove);
+			//			type.documentsNotTrained.removeAll(toRemove);
 		}
 		return ((double) right / total);
 	}
@@ -128,8 +135,8 @@ public class correctClassifier {
 	}
 
 	public void addDocumentAfterFeedback(Type newType, Document document) {
-		for(Type type: types) {
-			if(type.documentsNotTrained.contains(document)) {
+		for (Type type : types) {
+			if (type.documentsNotTrained.contains(document)) {
 				type.documentsNotTrained.remove(document);
 			}
 		}
@@ -148,7 +155,7 @@ public class correctClassifier {
 	public void setVocabularySize(int size) {
 		vocabSize = size;
 	}
-	
+
 	public void resetClassifier() {
 		types.clear();
 		features.clear();
@@ -157,5 +164,17 @@ public class correctClassifier {
 		wrongClassified.clear();
 		vocabulary = new Vocabulary(this);
 		vocabSize = 0;
+	}
+
+	public void addDocuments(Type type, String location) {
+		try (Stream<Path> paths = Files.walk(Paths.get(location))) {
+			paths.forEach(filePath -> {
+				type.addDocument(
+						new Document(new File(filePath.toString()).getName(), filePath.toString(), type, this));
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		type.buildFeatureMap();
 	}
 }

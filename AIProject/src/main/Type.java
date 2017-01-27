@@ -74,4 +74,8 @@ public class Type {
 		}
 		return result;
 	}
+	
+	public void addDocument(Document newDoc) {
+			documents.add(newDoc);
+	}
 }
