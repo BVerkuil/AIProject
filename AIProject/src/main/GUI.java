@@ -353,17 +353,18 @@ public class GUI extends JFrame {
 				if (type.name.equals(correct.getText())) {
 					correctClassifier.addDocumentAfterFeedback(type, nextDoc);
 				}
-				if (iterate.hasNext()) {
-					nextDoc = iterate.next();
-					classifiedAs.setText("Document \"" + nextDoc.getName() + "\" is classified as: ");
-
-				} else {
-					correctClassifier.rebuildClassifier();
-					DecimalFormat numberFormat = new DecimalFormat("#0.00");
-					accuracy.setText("The accuracy is : " + numberFormat.format(correctClassifier.testClassifier()));
-					cardLayout.show(cards, "Card 2");
-				}
 			}
+			if (iterate.hasNext()) {
+				nextDoc = iterate.next();
+				classifiedAs.setText("Document \"" + nextDoc.getName() + "\" is classified as: ");
+
+			} else {
+				correctClassifier.rebuildClassifier();
+				DecimalFormat numberFormat = new DecimalFormat("#0.00");
+				accuracy.setText("The accuracy is : " + numberFormat.format(correctClassifier.testClassifier()));
+				cardLayout.show(cards, "Card 2");
+			}
+
 		});
 
 		notCorrect.addActionListener(event -> {
@@ -371,16 +372,16 @@ public class GUI extends JFrame {
 				if (type.name.equals(correct.getText())) {
 					correctClassifier.addDocumentAfterFeedback(type, nextDoc);
 				}
-				if (iterate.hasNext()) {
-					nextDoc = iterate.next();
-					classifiedAs.setText("Document \"" + nextDoc.getName() + "\" is classified as: ");
-				} else {
-					correctClassifier.rebuildClassifier();
-					DecimalFormat numberFormat = new DecimalFormat("#0.00");
-					accuracy.setText("The accuracy is : " + numberFormat.format(correctClassifier.testClassifier()));
-					cardLayout.show(cards, "Card 2");
+			}
+			if (iterate.hasNext()) {
+				nextDoc = iterate.next();
+				classifiedAs.setText("Document \"" + nextDoc.getName() + "\" is classified as: ");
+			} else {
+				correctClassifier.rebuildClassifier();
+				DecimalFormat numberFormat = new DecimalFormat("#0.00");
+				accuracy.setText("The accuracy is : " + numberFormat.format(correctClassifier.testClassifier()));
+				cardLayout.show(cards, "Card 2");
 
-				}
 			}
 		});
 
