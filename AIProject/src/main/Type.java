@@ -23,6 +23,8 @@ public class Type {
 	public correctClassifier classifer;
 	public int numberOfFiles;
 	public int currentFileNumber;
+	public List<String> allFeatures = new ArrayList<String>();
+	public int vocabFeatures;
 
 	public Type(String name, String folderLocation, correctClassifier classifier, double trainingsRatio) {
 		numberOfFiles = new File(folderLocation).list().length;
@@ -50,6 +52,7 @@ public class Type {
 	public void buildFeatureMap() {
 		for (Document document : documents) {
 			for (String feature : document.features) {
+				allFeatures.add(feature);
 				totalFeatures++;
 				if (!featureMap.keySet().contains(feature)) {
 					featureMap.put(feature, 1);

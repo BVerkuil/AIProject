@@ -1,21 +1,27 @@
 package classifiers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 import main.ChiSquare;
 import main.Document;
 import main.Type;
+import main.Vocabulary;
 
 public class correctClassifier {
 
 	public List<Type> types = new ArrayList<Type>();
-	public List<String> features = new ArrayList<String>();
-	public List<String> vocabulary = new ArrayList<String>();
+	public Set<String> features = new HashSet<String>();
 	public double trainingRatio;
 	public int totalAmountOfDocuments = 0;
 	public List<Document> wrongClassified = new ArrayList<Document>();
+	public List<String> blackList = new ArrayList<String>(Arrays.asList("by", "an", "you", "it", "from", "have", "if"));
+	public Vocabulary vocabulary = new Vocabulary(this);
+	public int vocabSize;
 
 	public ChiSquare chiSquare;
 
@@ -29,89 +35,81 @@ public class correctClassifier {
 		for (Type type : types) {
 			if (type.name.equals(name)) {
 				for (Document document : type.documents) {
-					for (String feature : document.features) {
-						if (!features.contains(feature)) {
-							features.add(feature);
-						}
-					}
+						features.addAll(document.features);
 				}
-				type.buildFeatureMap();
-				totalAmountOfDocuments = totalAmountOfDocuments + type.documents.size();
 			}
+			type.buildFeatureMap();
+			totalAmountOfDocuments = totalAmountOfDocuments + type.documents.size();
 		}
 	}
 
 	public void selectVocabulary(int featureListSize) {
+		vocabSize = featureListSize;
 		TreeMap<Float, String> chiSquarePerFeature = new TreeMap<Float, String>();
 		chiSquare = new ChiSquare(this);
-		System.out.println(features.size());
 		for (String feature : features) {
 			chiSquarePerFeature.put(chiSquare.calculate(feature), feature);
 		}
 		for (int i = 0; i < featureListSize; i++) {
-			vocabulary.add(chiSquarePerFeature.get(chiSquarePerFeature.lastKey()));
-			chiSquarePerFeature.remove(chiSquarePerFeature.lastKey());
+			boolean foundNext = false;
+			while (!foundNext) {
+				if (!blackList.contains(chiSquarePerFeature.get(chiSquarePerFeature.lastKey()))) {
+					vocabulary.addFeature(chiSquarePerFeature.get(chiSquarePerFeature.lastKey()));
+					chiSquarePerFeature.remove(chiSquarePerFeature.lastKey());
+					foundNext = true;
+				} else {
+					chiSquarePerFeature.remove(chiSquarePerFeature.lastKey());
+				}
+			}
 		}
-		System.out.println(vocabulary);
+		for (Type type : types) {
+			List<String> retained = new ArrayList<String>(type.allFeatures);
+			retained.retainAll(vocabulary.features);
+			type.vocabFeatures = retained.size();
+		}
+		System.out.println(vocabulary.features);
+		vocabulary.calculateValues();
 	}
 
 	public double testClassifier() {
 		int total = 0;
 		int right = 0;
-		int wrong = 0;
 		//Find Documents to test
 		for (Type type : types) {
 			for (Document document : type.documentsNotTrained) {
 				if (this.classifyDocument(document).equals(type)) {
-//					System.out.println("Correct");
 					right++;
 					total++;
 				} else {
-//					System.out.println("incorrect, guessed: " + this.classifyDocument(document).name + ". Was "
-//							+ type.name + "name: " + document.name);
-					wrong++;
 					total++;
 					wrongClassified.add(document);
 				}
-//				System.exit(0);
 			}
 		}
-		System.out.println((double) right / total);
-		return((double) right / total);
+		return ((double) right / total);
 	}
 
 	public Type classifyDocument(Document document) {
 		//Remove words not in vocabulary
 		List<String> vocabInDocument = new ArrayList<String>(document.features);
-		vocabInDocument.retainAll(vocabulary);
-//		System.out.println(vocabInDocument);
-		Type result = types.get(0);
-		double currentmax = -100000;
+		vocabInDocument.retainAll(vocabulary.features);
+		double total = 0;
+		double previous = -100000;
+		Type guess = types.get(0);
 		for (Type type : types) {
-			double sum = 0;
-			double base = Math.log((double)type.documents.size()/totalAmountOfDocuments) / Math.log(2);
+			total = 0;
 			for (String feature : vocabInDocument) {
-				sum = sum * calculateChance(feature, type);
+				total = total + vocabulary.getValueForType(feature, type);
 			}
-			if( (base + Math.log(sum)) > currentmax) {
-				result = type;
+			total = Math.log(((double) type.numberOfFiles / totalAmountOfDocuments)) + total;
+			if (total > previous) {
+				previous = total;
+				guess = type;
 			}
-//			System.out.println("Value: "+ (base * sum) + ". Type: " + type.name);
+//			System.out.print("Value for " + type.name + ": "+total + ".  ");
 		}
-		return result;
-	}
-
-	public double calculateChance(String feature, Type type) {
-		int featureOccuranceInClass = 0;
-		if (type.featureMap.containsKey(feature)) {
-			featureOccuranceInClass = type.featureMap.get(feature);
-		}
-		int k = 1;
-		int totalWordsInClass = type.totalFeatures;
-		int vocabSize = vocabulary.size();
-		double result;
-		result = Math.log((double) (featureOccuranceInClass + k) / (totalWordsInClass + (k * vocabSize))) / Math.log(2);
-		return result;
+//		System.out.println("");
+		return guess;
 	}
 
 	@Override

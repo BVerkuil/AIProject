@@ -28,7 +28,7 @@ public class Document {
 			scanner = new Scanner(file);
 			while(scanner.hasNext()){
 				String feature = scanner.next().replaceAll("[^a-zA-Z]", "").toLowerCase();
-				if(!features.contains(feature) && !feature.equals("")) {
+				if(!feature.equals("")) {
 					features.add(feature);
 				}
 			}
