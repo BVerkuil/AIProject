@@ -2,6 +2,7 @@ package main;
 
 import javax.swing.JFrame;
 
+import Gui.GUI;
 import classifiers.correctClassifier;;
 
 public class Main {

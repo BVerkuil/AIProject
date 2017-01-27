@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 import javax.swing.JFrame;
 
-import main.GUI;
+import Gui.GUI;
 
 public class SimpleClassifier_old {
 
