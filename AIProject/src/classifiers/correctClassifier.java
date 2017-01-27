@@ -35,7 +35,7 @@ public class correctClassifier {
 		for (Type type : types) {
 			if (type.name.equals(name)) {
 				for (Document document : type.documents) {
-						features.addAll(document.features);
+					features.addAll(document.features);
 				}
 			}
 			type.buildFeatureMap();
@@ -75,11 +75,12 @@ public class correctClassifier {
 		int right = 0;
 		//Find Documents to test
 		for (Type type : types) {
+			List<Document> toRemove = new ArrayList<Document>();
 			for (Document document : type.documentsNotTrained) {
 				if (this.classifyDocument(document).equals(type)) {
 					type.documents.add(document);
-					type.documentsNotTrained.remove(document);
-					if(wrongClassified.contains(document)) {
+					toRemove.add(document);
+					if (wrongClassified.contains(document)) {
 						wrongClassified.remove(document);
 					}
 					right++;
@@ -89,6 +90,7 @@ public class correctClassifier {
 					wrongClassified.add(document);
 				}
 			}
+			type.documentsNotTrained.removeAll(toRemove);
 		}
 		return ((double) right / total);
 	}
@@ -110,9 +112,9 @@ public class correctClassifier {
 				previous = total;
 				guess = type;
 			}
-//			System.out.print("Value for " + type.name + ": "+total + ".  ");
+			//			System.out.print("Value for " + type.name + ": "+total + ".  ");
 		}
-//		System.out.println("");
+		//		System.out.println("");
 		return guess;
 	}
 
@@ -125,20 +127,20 @@ public class correctClassifier {
 		}
 		return result;
 	}
-	
+
 	public void addDocumentAfterFeedback(Type newType, Document document) {
 		newType.documents.add(document);
 		newType.documentsNotTrained.remove(document);
 	}
 
 	public void rebuildClassifier() {
-		for(Type type: types) {
+		for (Type type : types) {
 			type.buildFeatureMap();
 		}
 		selectVocabulary();
-		
+
 	}
-	
+
 	public void setVocabularySize(int size) {
 		vocabSize = size;
 	}
