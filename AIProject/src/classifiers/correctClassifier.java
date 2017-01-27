@@ -25,7 +25,8 @@ public class correctClassifier {
 
 	public ChiSquare chiSquare;
 
-	public correctClassifier(double trainingsRatio) {
+	public correctClassifier(double trainingsRatio, int vocabSize) {
+		this.vocabSize = vocabSize;
 		this.trainingRatio = trainingsRatio;
 	}
 
@@ -43,14 +44,13 @@ public class correctClassifier {
 		}
 	}
 
-	public void selectVocabulary(int featureListSize) {
-		vocabSize = featureListSize;
+	public void selectVocabulary() {
 		TreeMap<Float, String> chiSquarePerFeature = new TreeMap<Float, String>();
 		chiSquare = new ChiSquare(this);
 		for (String feature : features) {
 			chiSquarePerFeature.put(chiSquare.calculate(feature), feature);
 		}
-		for (int i = 0; i < featureListSize; i++) {
+		for (int i = 0; i < vocabSize; i++) {
 			boolean foundNext = false;
 			while (!foundNext) {
 				if (!blackList.contains(chiSquarePerFeature.get(chiSquarePerFeature.lastKey()))) {
@@ -78,6 +78,7 @@ public class correctClassifier {
 		for (Type type : types) {
 			for (Document document : type.documentsNotTrained) {
 				if (this.classifyDocument(document).equals(type)) {
+					type.documents.add(document);
 					right++;
 					total++;
 				} else {
@@ -121,5 +122,16 @@ public class correctClassifier {
 		}
 		return result;
 	}
+	
+	public void addDocumentAfterFeedback(Type newType, Document document) {
+		newType.documents.add(document);
+	}
 
+	public void rebuildClassifier() {
+		for(Type type: types) {
+			type.buildFeatureMap();
+		}
+		selectVocabulary();
+	}
+	
 }

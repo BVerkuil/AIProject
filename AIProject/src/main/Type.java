@@ -50,6 +50,9 @@ public class Type {
 	}
 
 	public void buildFeatureMap() {
+		totalFeatures = 0;
+		allFeatures.clear();
+		featureMap.clear();
 		for (Document document : documents) {
 			for (String feature : document.features) {
 				allFeatures.add(feature);

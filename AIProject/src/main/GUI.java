@@ -309,7 +309,7 @@ public class GUI extends JFrame {
 			correctClassifier.addType(catB.getText(), folder2.getText());
 			try {
 				correctClassifier.trainingRatio = Double.parseDouble(ratio.getText());
-				correctClassifier.selectVocabulary(Integer.parseInt(vocabSize.getText()));
+				correctClassifier.selectVocabulary();
 			} catch (NumberFormatException e) {
 				System.out.println("The number was not correct");
 			}
