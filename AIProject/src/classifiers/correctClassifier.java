@@ -72,6 +72,7 @@ public class correctClassifier {
 	}
 
 	public double testClassifier() {
+		wrongClassified.clear();
 		int total = 0;
 		int right = 0;
 		//Find Documents to test
@@ -81,9 +82,6 @@ public class correctClassifier {
 				if (this.classifyDocument(document).equals(type)) {
 					type.documents.add(document);
 					toRemove.add(document);
-					if (wrongClassified.contains(document)) {
-						wrongClassified.remove(document);
-					}
 					right++;
 					total++;
 				} else {
