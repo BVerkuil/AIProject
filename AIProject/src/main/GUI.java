@@ -14,11 +14,11 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import classifiers.correctClassifier;
-import main.Type;
 
 public class GUI extends JFrame {
 
@@ -293,21 +293,28 @@ public class GUI extends JFrame {
 		});
 
 		nextButton.addActionListener(event -> {
-			loadingLabel.setVisible(true);
+			boolean bool = true;
 			correct.setText(catA.getText());
 			notCorrect.setText(catB.getText());
 			correctClassifier.addType(catA.getText(), folder1.getText());
 			correctClassifier.addType(catB.getText(), folder2.getText());
 			try {
 				correctClassifier.trainingRatio = Double.parseDouble(ratio.getText());
+				correctClassifier.setVocabularySize(Integer.parseInt(vocabSize.getText()));
 				correctClassifier.selectVocabulary();
 			} catch (NumberFormatException e) {
-				System.out.println("The number was not correct");
+				bool = false;
 			}
-
-			DecimalFormat numberFormat = new DecimalFormat("#0.00");
-			accuracy.setText("The accuracy is : " + numberFormat.format(correctClassifier.testClassifier()));
-			cardLayout.show(cards, "Card 2");
+			if (bool) {
+				loadingLabel.setVisible(true);
+				DecimalFormat numberFormat = new DecimalFormat("#0.00");
+				accuracy.setText("The accuracy is : " + numberFormat.format(correctClassifier.testClassifier()));
+				cardLayout.show(cards, "Card 2");
+				loadingLabel.setVisible(false);
+			} else {
+				JOptionPane.showMessageDialog(null, "The training ration or vocabulary size was not correct!", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
 		});
 
 		f3Button.addActionListener(event -> {
@@ -331,10 +338,14 @@ public class GUI extends JFrame {
 				nextDoc = iterate.next();
 				System.out.println(((Document) iterate.next()).getName());
 				classifiedAs.setText("Document \"" + nextDoc.getName() + "\" has not been classified correct ");
+				cardLayout.show(cards, "Card 3");
+			} else {
+				JOptionPane.showMessageDialog(null, "Everything was classified correctly", "Error",
+						JOptionPane.ERROR_MESSAGE);
 			}
 
 			resultDoc.setText("spam");
-			cardLayout.show(cards, "Card 3");
+
 		});
 
 		correct.addActionListener(event -> {
