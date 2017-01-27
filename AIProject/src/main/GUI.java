@@ -18,22 +18,23 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import classifiers.correctClassifier;
+import main.Type;
 
 public class GUI extends JFrame {
 
 	private JPanel cards;
 
-	//card 1 variables
+	// card 1 variables
 	private JTextField folder1;
 	private JTextField folder2;
 	private JTextField ratio;
-	private JTextField catAName;
-	private JTextField catBName;
+	private JLabel catAName;
+	private JLabel catBName;
 	private JTextField catA;
 	private JTextField catB;
-	private JTextField staticVocab;
+	private JLabel staticVocab;
 	private JTextField vocabSize;
-	private JTextField tRatio;
+	private JLabel tRatio;
 	private String catAFolder;
 	private String catBFolder;
 	private Double trainingRatio;
@@ -44,7 +45,7 @@ public class GUI extends JFrame {
 	private JFileChooser fc2;
 	private JLabel loadingLabel;
 
-	//card 2 variables
+	// card 2 variables
 	private JTextField accuracy;
 	private JTextField folder3;
 	private JTextField toBeClassified;
@@ -55,15 +56,16 @@ public class GUI extends JFrame {
 	private JButton back;
 	private JButton trainingHelp;
 
-	//card 3 variables
+	// card 3 variables
 	private JTextField classifiedAs;
 	private JTextField question;
 	private JTextField resultDoc;
 	private JButton correct;
 	private JButton notCorrect;
 
-	//other variables
-	private Iterator iterate;
+	// other variables
+	private Iterator<Document> iterate;
+	private Document nextDoc;
 
 	private CardLayout cardLayout;
 
@@ -80,45 +82,37 @@ public class GUI extends JFrame {
 		gbc.weightx = 0.25;
 		gbc.weighty = 1;
 
-		catAName = new JTextField("Name: ");
-		catAName.setEditable(false);
-		catAName.setBorder(null);
+		catAName = new JLabel("Name: ");
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		card1.add(catAName, gbc);
 
-		catBName = new JTextField("Name: ");
-		catBName.setEditable(false);
-		catBName.setBorder(null);
+		catBName = new JLabel("Name: ");
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		card1.add(catBName, gbc);
 
-		catA = new JTextField(20);
+		catA = new JTextField(10);
 		gbc.gridx = 1;
 		gbc.gridy = 0;
 		card1.add(catA, gbc);
 
-		catB = new JTextField(20);
+		catB = new JTextField(10);
 		gbc.gridx = 1;
 		gbc.gridy = 1;
 		card1.add(catB, gbc);
 
-		tRatio = new JTextField("Training ratio: ");
-		tRatio.setEditable(false);
-		tRatio.setBorder(null);
+		tRatio = new JLabel("Training ratio: ");
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		card1.add(tRatio, gbc);
 
-		staticVocab = new JTextField("Vocabulary size: ");
-		staticVocab.setEditable(false);
-		staticVocab.setBorder(null);
+		staticVocab = new JLabel("Vocabulary size: ");
 		gbc.gridx = 0;
 		gbc.gridy = 3;
 		card1.add(staticVocab, gbc);
 
-		vocabSize = new JTextField(20);
+		vocabSize = new JTextField(10);
 		gbc.gridx = 1;
 		gbc.gridy = 3;
 		card1.add(vocabSize, gbc);
@@ -133,7 +127,7 @@ public class GUI extends JFrame {
 		gbc.gridy = 1;
 		card1.add(folder2, gbc);
 
-		ratio = new JTextField(20);
+		ratio = new JTextField(10);
 		gbc.gridx = 1;
 		gbc.gridy = 2;
 		card1.add(ratio, gbc);
@@ -161,7 +155,7 @@ public class GUI extends JFrame {
 		gbc.gridy = 4;
 		card1.add(loadingLabel, gbc);
 
-		//Second screen will be made
+		// Second screen will be made
 
 		JPanel card2 = new JPanel(new GridBagLayout());
 
@@ -209,7 +203,7 @@ public class GUI extends JFrame {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		card2.add(trainingHelp, gbc);
 
-		//Third screen will be made
+		// Third screen will be made
 
 		JPanel card3 = new JPanel(new GridBagLayout());
 
@@ -334,9 +328,9 @@ public class GUI extends JFrame {
 		trainingHelp.addActionListener(event -> {
 			iterate = correctClassifier.wrongClassified.iterator();
 			if (iterate.hasNext()) {
+				nextDoc = iterate.next();
 				System.out.println(((Document) iterate.next()).getName());
-				classifiedAs.setText(
-						"Document \"" + ((Document) iterate.next()).getName() + "\" has not been classified correct ");
+				classifiedAs.setText("Document \"" + nextDoc.getName() + "\" has not been classified correct ");
 			}
 
 			resultDoc.setText("spam");
@@ -344,20 +338,34 @@ public class GUI extends JFrame {
 		});
 
 		correct.addActionListener(event -> {
-			if (iterate.hasNext()) {
-				classifiedAs.setText("Document \"" + ((Document) iterate.next()).getName() + "\" is classified as: ");
-			} else {
-				// set new accuracy
-				cardLayout.show(cards, "Card 2");
+			for (main.Type type : correctClassifier.types) {
+				if (type.equals(correct.getText())) {
+					correctClassifier.addDocumentAfterFeedback(type, nextDoc);
+				}
+				if (iterate.hasNext()) {
+					nextDoc = iterate.next();
+					classifiedAs.setText("Document \"" + nextDoc.getName() + "\" is classified as: ");
+
+				} else {
+					correctClassifier.rebuildClassifier();
+					cardLayout.show(cards, "Card 2");
+				}
 			}
 		});
 
 		notCorrect.addActionListener(event -> {
-			if (iterate.hasNext()) {
-				classifiedAs.setText("Document \"" + ((Document) iterate.next()).getName() + "\" is classified as: ");
-			} else {
-				// set new accuracy
-				cardLayout.show(cards, "Card 2");
+			for (main.Type type : correctClassifier.types) {
+				if (type.equals(correct.getText())) {
+					correctClassifier.addDocumentAfterFeedback(type, nextDoc);
+				}
+				if (iterate.hasNext()) {
+					classifiedAs
+							.setText("Document \"" + ((Document) iterate.next()).getName() + "\" is classified as: ");
+				} else {
+					correctClassifier.rebuildClassifier();
+					cardLayout.show(cards, "Card 2");
+
+				}
 			}
 		});
 
