@@ -350,7 +350,7 @@ public class GUI extends JFrame {
 
 		correct.addActionListener(event -> {
 			for (main.Type type : correctClassifier.types) {
-				if (type.equals(correct.getText())) {
+				if (type.name.equals(correct.getText())) {
 					correctClassifier.addDocumentAfterFeedback(type, nextDoc);
 				}
 				if (iterate.hasNext()) {
@@ -359,6 +359,8 @@ public class GUI extends JFrame {
 
 				} else {
 					correctClassifier.rebuildClassifier();
+					DecimalFormat numberFormat = new DecimalFormat("#0.00");
+					accuracy.setText("The accuracy is : " + numberFormat.format(correctClassifier.testClassifier()));
 					cardLayout.show(cards, "Card 2");
 				}
 			}
@@ -366,14 +368,16 @@ public class GUI extends JFrame {
 
 		notCorrect.addActionListener(event -> {
 			for (main.Type type : correctClassifier.types) {
-				if (type.equals(correct.getText())) {
+				if (type.name.equals(correct.getText())) {
 					correctClassifier.addDocumentAfterFeedback(type, nextDoc);
 				}
 				if (iterate.hasNext()) {
-					classifiedAs
-							.setText("Document \"" + ((Document) iterate.next()).getName() + "\" is classified as: ");
+					nextDoc = iterate.next();
+					classifiedAs.setText("Document \"" + nextDoc.getName() + "\" is classified as: ");
 				} else {
 					correctClassifier.rebuildClassifier();
+					DecimalFormat numberFormat = new DecimalFormat("#0.00");
+					accuracy.setText("The accuracy is : " + numberFormat.format(correctClassifier.testClassifier()));
 					cardLayout.show(cards, "Card 2");
 
 				}
