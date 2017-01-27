@@ -25,8 +25,7 @@ public class correctClassifier {
 
 	public ChiSquare chiSquare;
 
-	public correctClassifier(double trainingsRatio, int vocabSize) {
-		this.vocabSize = vocabSize;
+	public correctClassifier(double trainingsRatio) {
 		this.trainingRatio = trainingsRatio;
 	}
 
@@ -134,4 +133,7 @@ public class correctClassifier {
 		selectVocabulary();
 	}
 	
+	public void setVocabularySize(int size) {
+		vocabSize = size;
+	}
 }
