@@ -19,7 +19,7 @@ public class correctClassifier {
 	public double trainingRatio;
 	public int totalAmountOfDocuments = 0;
 	public List<Document> wrongClassified = new ArrayList<Document>();
-	public List<String> blackList = new ArrayList<String>(Arrays.asList("by", "an", "you", "it", "from", "have", "if"));
+	public List<String> blackList = new ArrayList<String>(Arrays.asList("by", "an", "you", "it", "from", "have", "if", "the", "a"));
 	public Vocabulary vocabulary = new Vocabulary(this);
 	public int vocabSize;
 
@@ -147,5 +147,15 @@ public class correctClassifier {
 
 	public void setVocabularySize(int size) {
 		vocabSize = size;
+	}
+	
+	public void resetClassifier() {
+		types.clear();
+		features.clear();
+		trainingRatio = 0;
+		totalAmountOfDocuments = 0;
+		wrongClassified.clear();
+		vocabulary = new Vocabulary(this);
+		vocabSize = 0;
 	}
 }
